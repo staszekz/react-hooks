@@ -26,13 +26,29 @@ function App() {
 
 export default App
 
-const useLocalStorage = (key, initialName) => {
-  const [state, setState] = React.useState(
-    () => window.localStorage.getItem(key) ?? initialName,
-  )
+const useLocalStorage = (
+  key,
+  initialValue = '',
+  {serialize = JSON.stringify, deserialize = JSON.parse} = {},
+) => {
+  const [state, setState] = React.useState(() => {
+    const valueInLocalStorage = window.localStorage.getItem(key)
+    if (valueInLocalStorage) {
+      return deserialize(valueInLocalStorage)
+    }
+    return typeof initialValue === 'function' ? initialValue() : initialValue
+  })
+
+  const prevKeyRef = React.useRef(key)
+
   React.useEffect(() => {
-    window.localStorage.setItem(key, state)
-  }, [key, state])
+    const prevKey = prevKeyRef.current
+    if (prevKey !== key) {
+      window.localStorage.removeItem(prevKey)
+    }
+    prevKeyRef.current = key
+    window.localStorage.setItem(key, serialize(state))
+  }, [key, serialize, state])
 
   return [state, setState]
 }
