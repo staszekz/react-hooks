@@ -38,6 +38,7 @@ const useLocalStorage = (
     }
     return typeof initialValue === 'function' ? initialValue() : initialValue
   })
+  console.log('🚀 %c ~ state', 'color: tomato', state)
 
   const prevKeyRef = React.useRef(key)
 
