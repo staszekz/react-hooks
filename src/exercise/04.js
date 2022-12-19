@@ -2,11 +2,17 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import * as React from 'react'
-
+const initialSquares = Array(9).fill(null)
 function Board() {
   // 🐨 squares is the state for this component. Add useState for squares
   // const squares = Array(9).fill(null)
-  const [squares, setSquares] = React.useState(Array(9).fill(null))
+  const [squares, setSquares] = React.useState(
+    () => JSON.parse(localStorage.getItem('squaresBackup')) || initialSquares,
+  )
+
+  React.useEffect(() => {
+    localStorage.setItem('squaresBackup', JSON.stringify(squares))
+  }, [squares])
   // 🐨 We'll need the following bits of derived state:
   const nextValue = calculateNextValue(squares)
   const winner = calculateWinner(squares)
@@ -17,12 +23,11 @@ function Board() {
 
     const newSquares = [...squares]
     newSquares[square] = nextValue
-
     setSquares(newSquares)
   }
 
   function restart() {
-    setSquares(Array(9).fill(null))
+    setSquares(initialSquares)
   }
 
   function renderSquare(i) {
