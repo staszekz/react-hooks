@@ -15,18 +15,37 @@ import {
 
 function PokemonInfo({pokemonName}) {
   const [pokemon, setPokemon] = React.useState(null)
+  const [status, setStatus] = React.useState('idle')
+
   const [error, setError] = React.useState(null)
 
   React.useEffect(() => {
     if (!pokemonName) return
+    setStatus('pending')
     fetchPokemon(pokemonName)
-      .then(data => setPokemon(data))
-      .catch(err => setError(err))
+      .then(data => {
+        setStatus('resolved')
+        setPokemon(data)
+      })
+      .catch(err => {
+        setError(err)
+        setStatus('rejected')
+      })
 
     return () => setPokemon(null)
   }, [pokemonName])
 
-  if (error && !pokemon) {
+  if (status === 'idle') {
+    return 'Submit a pokemon'
+  }
+  if (status === 'pending') {
+    return <PokemonInfoFallback name={pokemonName} />
+  }
+
+  if (status === 'resolved') {
+    return <PokemonDataView pokemon={pokemon} />
+  }
+  if (status === 'rejected') {
     return (
       <div role="alert">
         There was an error:{' '}
@@ -34,15 +53,7 @@ function PokemonInfo({pokemonName}) {
       </div>
     )
   }
-  if (!pokemonName) {
-    return 'Submit a pokemon'
-  }
-  if (pokemon) {
-    return <PokemonDataView pokemon={pokemon} />
-  }
-  if (!pokemon) {
-    return <PokemonInfoFallback name={pokemonName} />
-  }
+  throw new Error('This is impossible')
 }
 
 function App() {
