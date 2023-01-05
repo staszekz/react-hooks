@@ -206,3 +206,21 @@ export {
   fetchPokemon,
   PokemonErrorBoundary,
 }
+
+export class ErrorBoundarySZ extends React.Component {
+  state = {error: null}
+
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI.
+    return {error}
+  }
+
+  render() {
+    if (this.state.error) {
+      // You can render any custom fallback UI
+      return <this.props.FallbackComponent error={this.props.error} />
+    }
+
+    return this.props.children
+  }
+}

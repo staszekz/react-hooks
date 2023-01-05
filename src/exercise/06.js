@@ -11,6 +11,7 @@ import {
   PokemonForm,
   PokemonInfoFallback,
   PokemonDataView,
+  ErrorBoundarySZ,
 } from '../pokemon'
 
 function PokemonInfo({pokemonName}) {
@@ -45,14 +46,8 @@ function PokemonInfo({pokemonName}) {
     return <PokemonDataView pokemon={pokemon} />
   }
   if (status === 'rejected') {
-    return (
-      <div role="alert">
-        There was an error:{' '}
-        <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
-      </div>
-    )
+    throw error
   }
-  throw new Error('This is impossible')
 }
 
 function App() {
@@ -67,10 +62,21 @@ function App() {
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <PokemonInfo pokemonName={pokemonName} />
+        <ErrorBoundarySZ FallbackComponent={FallbackComponent}>
+          <PokemonInfo pokemonName={pokemonName} />
+        </ErrorBoundarySZ>
       </div>
     </div>
   )
 }
 
 export default App
+
+function FallbackComponent(error) {
+  return (
+    <div role="alert">
+      There was an error:{' '}
+      <pre style={{whiteSpace: 'normal'}}>{error.message}</pre>
+    </div>
+  )
+}
