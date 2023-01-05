@@ -14,25 +14,24 @@ import {
 } from '../pokemon'
 
 function PokemonInfo({pokemonName}) {
-  const [pokemon, setPokemon] = React.useState(null)
-  const [status, setStatus] = React.useState('idle')
-
-  const [error, setError] = React.useState(null)
-
+  const [state, setState] = React.useState({
+    status: 'idle',
+    pokemon: null,
+    error: null,
+  })
+  const {status, pokemon, error} = state
   React.useEffect(() => {
     if (!pokemonName) return
-    setStatus('pending')
+    setState({...state, status: 'pending'})
     fetchPokemon(pokemonName)
       .then(data => {
-        setStatus('resolved')
-        setPokemon(data)
+        setState({...state, status: 'resolved', pokemon: data})
       })
       .catch(err => {
-        setError(err)
-        setStatus('rejected')
+        setState({...state, status: 'rejected', error: err})
       })
 
-    return () => setPokemon(null)
+    return () => setState({...state, status: 'idle', pokemon: null})
   }, [pokemonName])
 
   if (status === 'idle') {
