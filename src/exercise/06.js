@@ -12,7 +12,7 @@ import {
   PokemonInfoFallback,
   PokemonDataView,
   // ErrorBoundarySZ,
-  PokemonErrorBoundary,
+  // PokemonErrorBoundary,
 } from '../pokemon'
 import {ErrorBoundary} from 'react-error-boundary'
 
