@@ -18,7 +18,7 @@ import {ErrorBoundary} from 'react-error-boundary'
 
 function PokemonInfo({pokemonName}) {
   const [state, setState] = React.useState({
-    status: 'idle',
+    status: pokemonName ? 'pending' : 'idle',
     pokemon: null,
     error: null,
   })
@@ -58,13 +58,19 @@ function App() {
   function handleSubmit(newPokemonName) {
     setPokemonName(newPokemonName)
   }
-
+  function handleReset() {
+    setPokemonName('')
+  }
   return (
     <div className="pokemon-info-app">
       <PokemonForm pokemonName={pokemonName} onSubmit={handleSubmit} />
       <hr />
       <div className="pokemon-info">
-        <ErrorBoundary key={pokemonName} FallbackComponent={FallbackComponent}>
+        <ErrorBoundary
+          FallbackComponent={FallbackComponent}
+          onReset={handleReset}
+          resetKeys={[pokemonName]}
+        >
           <PokemonInfo pokemonName={pokemonName} />
         </ErrorBoundary>
       </div>
@@ -79,6 +85,7 @@ function FallbackComponent(error) {
     <div role="alert">
       There was an error:
       <pre style={{whiteSpace: 'normal'}}>{error.error.message}</pre>
+      <button onClick={error.resetErrorBoundary}>Try Again!</button>
     </div>
   )
 }
